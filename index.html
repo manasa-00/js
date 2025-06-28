@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My JS Projects</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      background-size: 300% 300%;
+      animation: gradientBG 15s ease infinite;
+      color: #fff;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 1em;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    nav button {
+      background: linear-gradient(to right, #00c6ff, #0072ff);
+      border: none;
+      padding: 10px 20px;
+      color: white;
+      font-weight: bold;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    nav button:hover {
+      transform: scale(1.05);
+      background: linear-gradient(to right, #ff416c, #ff4b2b);
+    }
+
+    section {
+      display: none;
+      padding: 2em 10%;
+    }
+
+    section.active {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      color: #ffd700;
+      border-bottom: 2px solid #ffd700;
+      padding-bottom: 0.3em;
+    }
+
+    input[type="text"], select {
+      padding: 0.6em;
+      border-radius: 6px;
+      border: none;
+      background-color: #333;
+      color: #fff;
+      margin: 0.5em 0;
+    }
+
+    .add-btn {
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 0.6em 1em;
+      cursor: pointer;
+    }
+
+    .todo-item {
+      margin-top: 10px;
+      padding: 0.6em;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .todo-item button {
+      background: #e74c3c;
+      border: none;
+      color: white;
+      padding: 0.4em 0.8em;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .product {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 1em;
+      margin: 1em 0;
+      border-radius: 10px;
+      border-left: 5px solid #00c6ff;
+    }
+
+    .product strong {
+      color: white;
+      font-size: 1.2em;
+    }
+
+    .filter-sort select {
+      background-color: black;
+      color: white;
+      font-weight: bold;
+    }
+
+    a {
+      color: #00c6ff;
+      text-decoration: none;
+    }
+
+    ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    ul li {
+      margin: 0.3em 0;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <button onclick="showSection('portfolio')">Portfolio</button>
+    <button onclick="showSection('todo')">To-Do App</button>
+    <button onclick="showSection('products')">Product Page</button>
+  </nav>
+
+  <section id="portfolio" class="active">
+    <h2>About Me</h2>
+    <p>
+      I'm a B.Tech 3rd-year student at GVPCOE with a deep passion for frontend development and UI/UX design.
+      I enjoy crafting interactive, responsive, and visually appealing websites using HTML, CSS, and JavaScript.
+      Coding is not just a skill but a creative outlet for me, where every line shapes a better user experience.
+    </p>
+    <p>
+      Apart from development, I love exploring new tech trends, contributing to open-source projects,
+      and constantly improving my design sense. I'm enthusiastic about collaborating on innovative ideas and
+      building web solutions that make an impact.
+    </p>
+    <p>
+      This site showcases a few of my JavaScript projects including a To-Do App and a Product Filter Page.
+      Feel free to explore and connect!
+    </p>
+    <p>
+      📧 Email: <a href="mailto:323103310045@gvpce.ac.in">323103310045@gvpce.ac.in</a>
+    </p>
+  </section>
+
+  <section id="todo">
+    <h2>To-Do / Notes App</h2>
+    <div>
+      <input type="text" id="todoInput" placeholder="Add a task or note..." />
+      <button class="add-btn" onclick="addTodo()">Add</button>
+    </div>
+    <div id="todoList"></div>
+  </section>
+
+  <section id="products">
+    <h2>Product Listing with Filter & Sort</h2>
+    <div class="filter-sort">
+      <select id="filterCategory" onchange="renderProducts()">
+        <option value="all">All Categories</option>
+        <option value="tech">Tech</option>
+        <option value="books">Books</option>
+      </select>
+      <select id="sortOption" onchange="renderProducts()">
+        <option value="default">Sort By</option>
+        <option value="price">Price (Low to High)</option>
+        <option value="rating">Rating (High to Low)</option>
+      </select>
+    </div>
+    <div id="productContainer"></div>
+  </section>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      window.showSection = function (id) {
+        document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        if (id === 'todo') renderTodos();
+        if (id === 'products') renderProducts();
+      };
+
+      const todoInput = document.getElementById('todoInput');
+      const todoList = document.getElementById('todoList');
+      let todos = JSON.parse(localStorage.getItem('todos')) || [];
+
+      window.addTodo = function () {
+        const value = todoInput.value.trim();
+        if (!value) return;
+        todos.push(value);
+        localStorage.setItem('todos', JSON.stringify(todos));
+        todoInput.value = '';
+        renderTodos();
+      };
+
+      function renderTodos() {
+        todoList.innerHTML = '';
+        todos.forEach((item, index) => {
+          const div = document.createElement('div');
+          div.className = 'todo-item';
+          div.innerHTML = `${item} <button onclick="deleteTodo(${index})">X</button>`;
+          todoList.appendChild(div);
+        });
+      }
+
+      window.deleteTodo = function (index) {
+        todos.splice(index, 1);
+        localStorage.setItem('todos', JSON.stringify(todos));
+        renderTodos();
+      };
+
+      const products = [
+        { name: "Laptop", category: "tech", price: 700, rating: 4.5 },
+        { name: "JavaScript Book", category: "books", price: 30, rating: 4.8 },
+        { name: "Smartphone", category: "tech", price: 500, rating: 4.3 },
+        { name: "Fiction Novel", category: "books", price: 15, rating: 4.7 }
+      ];
+
+      window.renderProducts = function () {
+        const filter = document.getElementById('filterCategory').value;
+        const sort = document.getElementById('sortOption').value;
+        let filtered = products.slice();
+
+        if (filter !== 'all') {
+          filtered = filtered.filter(p => p.category === filter);
+        }
+
+        if (sort === 'price') {
+          filtered.sort((a, b) => a.price - b.price);
+        } else if (sort === 'rating') {
+          filtered.sort((a, b) => b.rating - a.rating);
+        }
+
+        const container = document.getElementById('productContainer');
+        container.innerHTML = '';
+        filtered.forEach(p => {
+          const div = document.createElement('div');
+          div.className = 'product';
+          div.innerHTML = `<strong>${p.name}</strong><br>Category: ${p.category}<br>Price: $${p.price}<br>Rating: ${p.rating} ⭐`;
+          container.appendChild(div);
+        });
+      };
+    });
+  </script>
+
+</body>
+</html>
